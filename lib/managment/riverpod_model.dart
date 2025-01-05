@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class RiverpodModel extends ChangeNotifier {
   List<dynamic> allUser = [];
+  final secureStorage = FlutterSecureStorage();
   bool isLoading = true;
   final Dio dio = Dio();
 
@@ -10,13 +12,14 @@ class RiverpodModel extends ChangeNotifier {
 
   Future<void> getAllUser() async {
     notifyListeners();
+    final token = await secureStorage.read(key: 'auth_token');
     try {
       // Backenddan ma'lumotlarni olib kelish
       final response =
-          await dio.get('http://192.168.240.18:3000/api/sale/client/all',
+          await dio.get('http://192.168.118.118:8000/api/sale/client/all',
               options: Options(headers: {
                 'Authorization':
-                    "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6InphdnFpIiwic3ViIjoyOSwiaWF0IjoxNzM1OTI0MzU2LCJleHAiOjE3MzU5MjU1NTZ9.Wioo9eIVRTzoYxz-NnhXyZjjv9Z9DmwgZkQg8uhyvSo"
+                    "Bearer $token"
               }));
       if (response.statusCode == 200 && response.data is List) {
         allUser = response.data;

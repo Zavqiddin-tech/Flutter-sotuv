@@ -1,28 +1,54 @@
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class RiverpodModel extends ChangeNotifier {
+class AuthRiverpodModel extends ChangeNotifier {
+  final secureStorage = FlutterSecureStorage();
   bool isLoading = true;
-  final Dio dio = Dio();
+  final dioInstance = dio.Dio(); // Prefiks qo‘llanildi
   bool isAuthorized = false; // Foydalanuvchini autentifikatsiya holati
 
-  RiverpodModel();
+  AuthRiverpodModel();
 
   Future<void> checkUser() async {
+    final token = await secureStorage.read(key: 'auth_token');
     try {
-      final response =
-          await dio.get('http://192.168.143.18:3000/api/auth/checkuser',
-              options: Options(headers: {
-                'Authorization':
-                    "Bearer"
-              }));
+      final res = await dioInstance.get(
+        'http://192.168.118.118:8000/api/auth/checkuser',
+        options: dio.Options(headers: {
+          'Authorization': "Bearer $token"
+        }),
+      );
 
-      print(response);
-
-      if (response.statusCode == 200) {
+      if (res.statusCode == 200) {
         isAuthorized = true;
         isLoading = false;
-      } else if (response.statusCode == 401) {
+      } else if (res.statusCode == 401) {
+        isAuthorized = false;
+        isLoading = false;
+      }
+    } catch (e) {
+      print('Error checking user: $e');
+      isAuthorized = false;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> login(String userName, String password) async {
+    try {
+      final res = await dioInstance.post('http://192.168.118.118:8000/api/auth/login', data: {
+        'userName': userName,
+        'password': password
+      });
+
+      if (res.statusCode == 201) {
+        print(res.data['accessToken']);
+        await secureStorage.write(key: 'auth_token', value: res.data['accessToken']);
+        isAuthorized = true;
+        isLoading = false;
+      } else if (res.statusCode == 401) {
         isAuthorized = false;
         isLoading = false;
       }

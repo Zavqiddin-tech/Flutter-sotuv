@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sotuv/auth/auth.dart';
-import 'package:sotuv/managment/riverpod.dart';
 import 'package:sotuv/router/router.dart';
 
 void main() {
