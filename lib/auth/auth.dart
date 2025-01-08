@@ -16,7 +16,7 @@ class AuthPage extends ConsumerWidget {
     // Yo'naltirishni bu yerda qiling
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (model.isAuthorized) {
-        Navigator.pushNamed(context, '/hard_page');
+        Navigator.pushNamed(context, '/dashboard_page');
       } else {
         Navigator.pushNamed(context, '/login_page');
       }

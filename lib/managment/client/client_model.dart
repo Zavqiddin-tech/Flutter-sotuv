@@ -3,28 +3,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sotuv/api/api.dart';
 
-class RiverpodModel extends ChangeNotifier {
-  List<dynamic> allUser = [];
+class ClientRiverpodModel extends ChangeNotifier {
+  List<dynamic> allClient = [];
   final secureStorage = FlutterSecureStorage();
   bool isLoading = true;
   final Dio dio = Dio();
 
-  RiverpodModel();
+  ClientRiverpodModel();
 
-  Future<void> getAllUser() async {
+  Future<void> getAllClient() async {
     notifyListeners();
     final token = await secureStorage.read(key: 'auth_token');
     try {
       // Backenddan ma'lumotlarni olib kelish
-      final response =
+      final res =
           await dio.get('${apiBaseUrl}/sale/client/all',
               options: Options(headers: {
                 'Authorization':
                     "Bearer $token"
               }));
-      if (response.statusCode == 200 && response.data is List) {
-        allUser = response.data;
-        if (allUser.isNotEmpty) {
+      if (res.statusCode == 200 && res.data is List) {
+        allClient = res.data;
+        if (allClient.isNotEmpty) {
           isLoading = false;
         }
       }

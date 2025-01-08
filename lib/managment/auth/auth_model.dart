@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:sotuv/api/api.dart';
 
 class AuthRiverpodModel extends ChangeNotifier {
   final secureStorage = FlutterSecureStorage();
   bool isLoading = true;
-  final dioInstance = dio.Dio(); // Prefiks qo‘llanildi
-  bool isAuthorized = false; // Foydalanuvchini autentifikatsiya holati
+  final dioInstance = dio.Dio();
+  bool isAuthorized = false;
 
   AuthRiverpodModel();
 
@@ -14,7 +15,7 @@ class AuthRiverpodModel extends ChangeNotifier {
     final token = await secureStorage.read(key: 'auth_token');
     try {
       final res = await dioInstance.get(
-        'http://192.168.118.118:8000/api/auth/checkuser',
+        '${apiBaseUrl}/auth/checkuser',
         options: dio.Options(headers: {
           'Authorization': "Bearer $token"
         }),
@@ -38,7 +39,7 @@ class AuthRiverpodModel extends ChangeNotifier {
 
   Future<void> login(String userName, String password) async {
     try {
-      final res = await dioInstance.post('http://192.168.118.118:8000/api/auth/login', data: {
+      final res = await dioInstance.post('${apiBaseUrl}/auth/login', data: {
         'userName': userName,
         'password': password
       });
